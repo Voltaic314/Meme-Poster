@@ -61,7 +61,9 @@ with open('MemeBot/Reddit-Grabber-Log.txt', 'r+') as f: # starts the main loop
                 h.write(str(random_url) + str("\n")) #on the sixth line, write the link to the image itself from the reddit post
                 h.write(str(random_size) + str("\n\n")) # on the seventh line, write the file size of the image we used (mainly just wanted to do this for tracking purposes but this isn't really used other than to make sure it's below the posting limit).
                 if page_id in r_text: # When you send a post to FB, if the post goes through it will return the page ID in the r.text, so this checks to make sure we actually made a real post instead of sending a bunch of error'd posts that didn't actually create a real post.
-                    count += 1 # increases the count so that this breaks the loop later
+                    count += 10 # increases the count so that this breaks the loop later
+                else:
+                    count += 1 # increases the count by 1 so the script now has one less try to attempt to post to FB. If this count ever reaches 10 or more it will break the loop. (which is good) theoretically also means the bot could fail 10 times and then we'd just have to wait until the next interval. But that's alright
                 for x in h: # creates a for loop so that we can break out
-                    if count == 1: # if the count goes from 0 to 1 (will because of the top condition) then...
-                        break # ... break the loop. Note that the count will only go up if a successful post goes through. Meaning it can keep constantly posting errors over and over until it finally gets a successful post. This may get spammy, so we may want to add another conditional count for error responses so we don't spam FB api with 1,000 error posts per every post or something. lol
+                    if count >= 10: # if the count goes from 0 to 1 (will because of the top condition) then...
+                        break # ... break the loop. Note that the count will only go up if a successful post goes through. Meaning it can keep constantly posting errors over and over until it finally gets a successful post.
