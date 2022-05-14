@@ -9,6 +9,8 @@ page_id = "100516779334651" # ID of the FB page, can be found on FB > page > abo
 now = datetime.now() # grabs the date and time
 dt_string = now.strftime("%m/%d/%Y %H:%M:%S") #formats the date and time to this format
 
+count = 0
+
 with open('MemeBot/Reddit-Grabber-Log.txt', 'r+') as f: # starts the main loop
     f_contents = f.readlines() # store each line of the contents of the reddit log file (see reddit code for what is in this log)
     desired_lines = [s.strip() for s in f_contents] # strip all the \n's from each line so that we can just get the exact strings
@@ -47,14 +49,19 @@ with open('MemeBot/Reddit-Grabber-Log.txt', 'r+') as f: # starts the main loop
                 "access_token": config.config_stuff['FB_Access_Token'] # giving our api token to our page referenced in the secret config file
               }
             r = requests.post(post_url, data=payload) #wraps up all the above info into a clean variable we can work with
+            r_text = r.text
             print(r.text) # print the return text from FB servers to make sure the message went through properly or if not look at errors
-
-            # Now that we posted the photo, we want to log it so that we don't post it again (and good for tracking purposes too).
+            # Now that we posted the photo, and made sure the post actually went through, we want to log it so that we don't post it again (and good for tracking purposes too).
             with open('MemeBot/FB-Poster-Log.txt','a+') as h: #open the log file
                 h.write(str(dt_string) + str("\n")) #on the first line, write the date and time
-                h.write(str(r_text) + str("\n")) #on the second line, write FB's return code (which contains the FB post ID).
+                h.write(str(r.text) + str("\n")) #on the second line, write FB's return code (which contains the FB post ID).
                 h.write(str(random_title) + str("\n")) #on the third line, write the Title of the original Reddit post
                 h.write(str(random_id) + str("\n")) #on the fourth line, write the ID of the Reddit post we used.
                 h.write(str(random_permalink) + str("\n")) #on the fifth line, write the link of the reddit post
                 h.write(str(random_url) + str("\n")) #on the sixth line, write the link to the image itself from the reddit post
                 h.write(str(random_size) + str("\n\n")) # on the seventh line, write the file size of the image we used (mainly just wanted to do this for tracking purposes but this isn't really used other than to make sure it's below the posting limit).
+                if page_id in r_text: # When you send a post to FB, if the post goes through it will return the page ID in the r.text, so this checks to make sure we actually made a real post instead of sending a bunch of error'd posts that didn't actually create a real post.
+                    count += 1 # increases the count so that this breaks the loop later
+                for x in h: # creates a for loop so that we can break out
+                    if count == 1: # if the count goes from 0 to 1 (will because of the top condition) then...
+                        break # ... break the loop. Note that the count will only go up if a successful post goes through. Meaning it can keep constantly posting errors over and over until it finally gets a successful post. This may get spammy, so we may want to add another conditional count for error responses so we don't spam FB api with 1,000 error posts per every post or something. lol
