@@ -19,7 +19,7 @@ subreddit = reddit.subreddit(random.choice(subreddit_list)).hot(limit=None)
 
 # this is a customizeable list of words that will be scanned in reddit post titles, if any of these words are found in the titles the post will not be logged for use. This helps clear the toxic posts out of the list.
 # note that I'm not necessarily saying these words are bad things, it's just that typically when these words are mentioned, it's in a negative toxic context. Not that I disagree with any of these specifically.
-bad_topics = ["faggot", "femboy", "nigger", "fat", "skinny", "horny", "masturbate", "anal", "sex", "racist", "homophobic"]
+bad_topics = ["faggot", "femboy", "nigger", "fat", "skinny", "horny", "masturbate", "anal", "sex", "racist", "homophobic", "rape", "rapist", "BDSM", "dom", "fucked", "hentai"]
 
 #establishes count for later count loop break
 count = 0
