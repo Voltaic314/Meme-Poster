@@ -94,7 +94,7 @@ for submission in subreddit:
                                 Spreadsheet_Values_Append.append([submission_title_string, submission_id_string, submission_permalink_string, url,submission_length_string, submission_hash_string])
                                 ## TODO: Fix the formatting so that it can support multiple lists within the list properly
                                 count += 1
-                                print("Post logged to Reddit Grabber Spreadsheet - " + str(count+1)))
+                                print("Post logged to Reddit Grabber Spreadsheet - " + str(count+1))
 
                                 for x in subreddit:  # starting for loop to establish checking the count
                                     if count == 4:  # this value determines how many images to post to the reddit spreadsheet
