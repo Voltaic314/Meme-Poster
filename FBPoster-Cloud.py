@@ -56,6 +56,8 @@ for string in values:
     #create a flatten list from the list of lists, this way we can do searches thorugh it lke hash check for example
     newlist = [item for items in values for item in items]
 
+    newlist_reddit_sheet = [item for items in values2 for item in items]
+
     # look for hash in the FB post log
     check_hash = random_hash_string in newlist
 
@@ -91,12 +93,39 @@ for string in values:
             request = sheet.values().append(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSHEET_ID'],
                                             range="FB-Poster-Log!A:H", valueInputOption="USER_ENTERED",
                                             body={
-                                                "values": Spreadsheet_Values_Append}).execute()  #this appends the spreadsheet to fit the list (row) of data onto the last row of the values.
+                                                "values": Spreadsheet_Values_Append}).execute()  # this appends the spreadsheet to fit the list (row) of data onto the last row of the values.
 
-            print("logged to FB Poster Spreadsheet") #really just using this as a confirmation to make sure the code got this far.
+            print("Logged to FB Poster Spreadsheet") #really just using this as a confirmation to make sure the code got this far.
+
+            ## these next 2 cariables don't actually get used, they are mainly for troubleshooting and info so they are commented out
+            #figure out what index of the hash is that we grabbed
+            #index_of_hash_string = newlist_reddit_sheet.index(random_hash_string)
+
+            #add 1 to the index and divide the index by 6 to get what row the hash is on
+            #divided = ((int(index_of_hash_string) + 1) / 6)
+
+            #create an empty list
+            random_generated = []
+
+            #fill the list with the random info we grabbed to recreate the row we grabbed
+            random_generated = [random_title, random_id, random_permalink_string, random_url, random_size, random_hash]
+
+            #take values 2 and remove the randomly generated info from the 2d list in python
+            values2.remove(random_generated)
+
+            print(random_generated)
+
+            #clear all the values in the reddit spreadsheet
+            request2 = sheet.values().clear(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSHEET_ID'], range="Reddit-Grabber-Log!A:F").execute()
+
+            #replace those empty cells with the new list that doesn't contain the one that FB Poster random choice grabbed
+            request3 = sheet.values().update(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSHEET_ID'], range="Reddit-Grabber-Log!A:F", valueInputOption="USER_ENTERED", body={"values":values2}).execute()
+
             count += 5  # increases the count so that this breaks the loop later
+
         else:
             count += 1 # increases count by 1, try to post 4 more times then stop when count = 5.
+
     else:
         continue  #try to find a different hash string that isn't in the loop.
 
@@ -104,5 +133,3 @@ for string in values:
         if count >= 5:  # if the count goes to 5 (will because of the top condition) then...
             break  # ... break the loop. Note that the count will only go up if a successful post goes through. Meaning it can keep constantly posting errors over and over until it finally gets a successful post.
     break
-
-# TODO: Fix code such that every time it posts to FB it removes that row from the reddit spreadsheet. To prevent reddit grabber spreadsheet from getting too big for no reason. (should make code faster too).
