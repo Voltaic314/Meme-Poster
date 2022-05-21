@@ -41,12 +41,15 @@ values2 = result2.get('values', []) #get values from spreadsheet
 subreddit_list = ["memes", "dankmemes", "shitposting", "Unexpected", "Wholesomememes", "me_irl", "meme", "Memes_Of_The_Dank", "starterpacks", "justneckbeardthings", "animemes", "AnimalsBeingDerps", "funny"]
 
 #list of bad words / topics to avoid in our posts
-bad_topics = ["faggot", "femboy", "nigger", "fat", "skinny", "horny", "masturbate", "anal", "sex", "racist", "homophobic", "rape", "rapist", "BDSM", "dom", "fucked", "hentai", "Joe Biden", "Biden", "Trump", "Donald Trump"]
+bad_topics = ["faggot", "femboy", "nigger", "fat", "skinny", "horny", "masturbate", "anal", "sex",
+              "racist", "homophobic", "rape", "rapist", "BDSM", "dom", "fucked", "hentai",
+              "Joe Biden", "Biden", "Trump", "Donald Trump", "disease", "symptom", "Parkinson", "Alzhemier", "memeory loss",
+              "COVID", "Virus", "Pandemic", "quarantine", "NATO", "Ukraine", "Russia", "Putin", "fatal", "lethal", "no cure"]
 
 #picks a random subreddit from the above list
 subreddit = reddit.subreddit(random.choice(subreddit_list)).hot(limit=None)
 
-#faltten the list of lists returned from the spreadsheet -- this is currently not used but can be useful later so commenting it out for now.
+#faltten the list of lists returned from the spreadsheet
 newlist = [item for items in values for item in items]
 
 
