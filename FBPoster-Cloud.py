@@ -78,7 +78,7 @@ for string in values:
 
         # True = no error
         if check_no_error is True:  # When you send a post to FB, if the post goes through it will return the page ID in the r.text, so this checks to make sure we actually made a real post instead of sending a bunch of error'd posts that didn't actually create a real post.
-            random_permalink_string = (str("http://www.reddit.com") + str(random_permalink))  # without concatenating, random_permalink only gives back /r/.... without the url part of it
+            random_permalink_string = str(random_permalink)  # without concatenating, random_permalink only gives back /r/.... without the url part of it
 
             #create an empty list to store our list of values to write to teh spreadsheet (spreadsheet requires a 2d list aka list of lists
             Spreadsheet_Values_Append = []  # create a list to put the data of each variable defined above into
