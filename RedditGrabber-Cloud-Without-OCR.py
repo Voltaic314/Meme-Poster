@@ -24,6 +24,7 @@ creds = service_account.Credentials.from_service_account_file(
 
 service = build('sheets', 'v4', credentials=creds) # builds a package with all the above info and version we need and the right service we need
 
+
 # Call the Sheets API
 sheet = service.spreadsheets()
 
@@ -38,20 +39,23 @@ result2 = sheet.values().get(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSH
 values2 = result2.get('values', []) #get values from spreadsheet
 
 #list of subreddits to grab memes from
-subreddit_list = ["memes", "dankmemes", "shitposting", "Unexpected", "Wholesomememes", "me_irl", "meme", "Memes_Of_The_Dank", "starterpacks", "justneckbeardthings", "animemes", "AnimalsBeingDerps", "funny"]
+subreddit_list = ["memes", "dankmemes", "shitposting", "Unexpected", "Wholesomememes", "me_irl", "meme", "Memes_Of_The_Dank", "starterpacks", "justneckbeardthings", "animemes", "funny"]
 
 #list of bad words / topics to avoid in our posts
 bad_topics = ["faggot", "femboy", "nigger", "fat", "skinny", "horny", "masturbate", "anal", "sex",
               "racist", "homophobic", "rape", "rapist", "BDSM", "dom", "fucked", "hentai",
               "Joe Biden", "Biden", "Trump", "Donald Trump", "disease", "symptom", "Parkinson", "Alzhemier", "memeory loss",
-              "COVID", "Virus", "Pandemic", "quarantine", "NATO", "Ukraine", "Russia", "Putin", "fatal", "lethal", "no cure"]
+              "COVID", "covid-19", "Virus", "bacteria", "Pandemic", "quarantine", "NATO", "Ukraine", "Russia", "Putin", "fatal",
+              "lethal", "no cure", "cock", "pussy", "dick", "vagina", "penis", "reddit", "u/", "/r/"]
 
 #picks a random subreddit from the above list
 subreddit = reddit.subreddit(random.choice(subreddit_list)).hot(limit=None)
 
-#faltten the list of lists returned from the spreadsheet
-newlist = [item for items in values for item in items]
+#flatten the list of lists returned from the fb poster spreadsheet
+newlist_fb = [item for items in values for item in items]
 
+#flatten the list of lists returned from the reddit grabber spreadsheet
+newlist_rg =[item for items in values2 for item in items]
 
 #initializes loop
 count = 0
@@ -73,7 +77,6 @@ for submission in subreddit:
                         if float(length) < 4000: # if it is less than 4 MB or 4000 KB (alternatively for cleaner numbers you can divide by 1,000,000 and do < 4 but e
                             open("image.jpg", 'wb').write(r.content) #download the image from the "url" variable link using requests function
                             hash = imagehash.dhash(Image.open("image.jpg")) #hash the image we just saved
-                            os.remove("image.jpg") #remove the image we just saved (since we don't actually need the file after hashing it
 
                             # define all of our variables as strings to be used later
                             submission_title_string = str(submission.title)
@@ -82,27 +85,44 @@ for submission in subreddit:
                             submission_length_string = str(length)
                             submission_hash_string = str(hash)
 
-                            #check to make sure the hash of the image we just tested is in the spreadsheet. False means that it's not which means it's not a duplicate image (which is good).
-                            check_hash = submission_hash_string in newlist
+                            #check to make sure the hash of the image we just tested is in the fb poster spreadsheet. False means that it's not which means it's not a duplicate image (which is good).
+                            check_hash_fb = submission_hash_string in newlist_fb
 
-                            if check_hash is False: #make sure the hash is not in the reddit post list already
+                            #check to make sure the hash of the image we just tested is in the reddit grabber spreadsheet. (We want false values only here).
+                            check_hash_rg = submission_hash_string in newlist_rg
 
-                                # create an empty list to store data
-                                Spreadsheet_Values_Append = []
+                            os.remove("image.jpg")  # remove the image we just saved (since we don't actually need the file after hashing it)
 
-                                #append list with data from variables above -- I wanted to do this with the count being 4 and have a list of lists containing 4 list which each represent rows but couldn't figure out the formatting so this will do for now.
-                                Spreadsheet_Values_Append.append([submission_title_string, submission_id_string, submission_permalink_string, url,submission_length_string, submission_hash_string])
-                                ## TODO: Fix the formatting so that it can support multiple lists within the list properly
-                                count += 1
-                                print("Post logged to Reddit Grabber Spreadsheet - " + str(count+1))
+                            #at this point in the code you might ask yourself, why are we comparing strings AFTER an image download, doesn't this seem like a lot of unnecessary compute time, and the answer is yes
+                            #unfortunately there is no way to compare if an image is a duplicate easily without some kind of image hashing which can only be done through having the image file itself
+                            #this means we have to download each image we want to try to use, hash it, compare the hash string to the others, then keep it or not if not a duplicate.
+                            #I recognize that this process can be somewhat lengthy and computational but luckily it's only doing one image a time so I've tried to optimize this as best as I can.
+                            #for our purposes this scale works fine but if you were doing this on a large scale it would suck immensely. luckily it works fine here.
 
-                                for x in subreddit:  # starting for loop to establish checking the count
-                                    if count == 4:  # this value determines how many images to post to the reddit spreadsheet
-                                        break  # ... break the loop. Note that the count will only go up if a successful post goes through. Meaning it can keep constantly posting errors over and over until it finally gets a successful post.
-                                break # break out of the original for loop above
+                            #make sure it was not already posted to FB
+                            if check_hash_fb == False:
 
+                                #make sure it was not already posted to rg spreadsheet
+                                if check_hash_rg == False:
+
+                                    # create an empty list to store data
+                                    Spreadsheet_Values_Append = []
+
+                                    #append list with data from variables above -- I wanted to do this with the count being 4 and have a list of lists containing 4 list which each represent rows but couldn't figure out the formatting so this will do for now.
+                                    Spreadsheet_Values_Append.append([submission_title_string, submission_id_string, submission_permalink_string, url,submission_length_string, submission_hash_string])
+                                    ## TODO: Fix formatting of this nonsense so we can post more than link in a single script run
+
+                                    #increases the count to break the loop
+                                    count += 1
+
+                                    for x in subreddit:  # starting for loop to establish checking the count
+                                        if count == 1:  # this value determines how many images to post to the reddit spreadsheet
+                                            break  # ... break the loop. Note that the count will only go up if a successful post goes through. Meaning it can keep constantly posting errors over and over until it finally gets a successful post.
+                                    break # break out of the original for loop above
 
 #write 2d list to the final row of the spreadsheet (this is where it adds what it just found to the spreadsheet finally
 request = sheet.values().append(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSHEET_ID'],
-                                range="Reddit-Grabber-Log!A:F", valueInputOption="USER_ENTERED",
+                                range="Reddit-Grabber-Log!A:F", valueInputOption="RAW",
                                 body={"values": Spreadsheet_Values_Append}).execute()
+
+print("Post logged to Reddit Grabber Spreadsheet")
