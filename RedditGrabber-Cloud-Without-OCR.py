@@ -64,7 +64,7 @@ for submission in subreddit:
     url = str(submission.url) #makes sure that the url we got from the api is a string variable
     if url.endswith("jpg") or url.endswith("jpeg") or url.endswith("png"): #make sure the post is an image
 
-        if submission.id not in newlist: #make sure we don't grab the same reddit post twice -- dont need to hash images that we've already done before
+        if submission.id not in newlist_rg: #make sure we don't grab the same reddit post twice -- dont need to hash images that we've already done before
 
             if submission.spoiler is False: # make sure the post is not flagged as a spoiler
 
