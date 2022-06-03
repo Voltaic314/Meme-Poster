@@ -11,7 +11,7 @@ page_id = "100516779334651" # ID of the FB page, can be found on FB > page > abo
 now = datetime.now() # grabs the date and time
 dt_string = now.strftime("%m/%d/%Y %H:%M:%S") # formats the date and time to this format
 
-SERVICE_ACCOUNT_FILE = 'keys.json' # points to the keys json file that holds the dictionary of the info we need.
+SERVICE_ACCOUNT_FILE = '/home/pi/Documents/Programming-Projects/Meme-Bot/keys.json' # points to the keys json file that holds the dictionary of the info we need.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets'] # website to send the oauth info to gain access to our data
 
 creds = None #writes this variable to no value before overwriting it with the info we need, basically cleaning and prepping it
@@ -54,12 +54,10 @@ for string in values:
     random_hash_string = str(random_hash) # converts hash to string value just to be safe for the next step
 
     #create a flatten list from the list of lists, this way we can do searches thorugh it lke hash check for example
-    newlist = [item for items in values for item in items]
-
-    newlist_reddit_sheet = [item for items in values2 for item in items]
+    flatlist_fb_sheet = [item for items in values for item in items]
 
     # look for hash in the FB post log
-    check_hash = random_hash_string in newlist
+    check_hash = random_hash_string in flatlist_fb_sheet
 
     # if random_hash_string not in values: # scan all ouf our FB logs to see if the hash of the image we picked has already been posted.
     if check_hash is False:
@@ -97,13 +95,6 @@ for string in values:
 
             print("Logged to FB Poster Spreadsheet") #really just using this as a confirmation to make sure the code got this far.
 
-            ## these next 2 cariables don't actually get used, they are mainly for troubleshooting and info so they are commented out
-            #figure out what index of the hash is that we grabbed
-            #index_of_hash_string = newlist_reddit_sheet.index(random_hash_string)
-
-            #add 1 to the index and divide the index by 6 to get what row the hash is on
-            #divided = ((int(index_of_hash_string) + 1) / 6)
-
             #create an empty list
             random_generated = []
 
@@ -113,13 +104,11 @@ for string in values:
             #take values 2 and remove the randomly generated info from the 2d list in python
             values2.remove(random_generated)
 
-            print(random_generated)
-
             #clear all the values in the reddit spreadsheet
-            request2 = sheet.values().clear(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSHEET_ID'], range="Reddit-Grabber-Log!A:F").execute()
+            request_clear = sheet.values().clear(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSHEET_ID'], range="Reddit-Grabber-Log!A:F").execute()
 
             #replace those empty cells with the new list that doesn't contain the one that FB Poster random choice grabbed
-            request3 = sheet.values().update(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSHEET_ID'], range="Reddit-Grabber-Log!A:F", valueInputOption="USER_ENTERED", body={"values":values2}).execute()
+            request_rewrite = sheet.values().update(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSHEET_ID'], range="Reddit-Grabber-Log!A:F", valueInputOption="RAW", body={"values":values2}).execute()
 
             count += 5  # increases the count so that this breaks the loop later
 
