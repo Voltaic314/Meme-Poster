@@ -50,7 +50,7 @@ bad_topics = ["faggot", "femboy", "nigger", "fat", "skinny", "horny", "masturbat
               "Joe Biden", "Biden", "Trump", "Donald Trump", "disease", "symptom", "Parkinson", "Alzhemier", "memeory loss",
               "COVID", "covid-19", "Virus", "bacteria", "Pandemic", "quarantine", "NATO", "Ukraine", "Russia", "Putin", "fatal",
               "lethal", "no cure", "cock", "pussy", "dick", "vagina", "penis", "reddit",
-              "u/", "/r/", "feminists", "qanon"]
+              "u/", "/r/", "feminists", "qanon", "shooting", "Uvalde",]
 
 #picks a random subreddit from the above list
 subreddit = reddit.subreddit(random.choice(subreddit_list)).hot(limit=None)
@@ -103,11 +103,17 @@ for submission in subreddit:
 
                                 if check_hash_rg == False:
 
-                                    #run OCR
+                                    ##run OCR
+                                    #point to where the tesseract files are in our directory
                                    pytesseract.pytesseract.tesseract_cmd = r'/home/pi/.local/lib/python3.9/site-packages/tesseract'
 
+                                    #read BGR values from image
                                     img=cv2.imread('image.jpg')
+
+                                    #convert BGR values to RGB values
                                     img=cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+                                    #give us the resulting text (strings) from the image
                                     ocr_result = pytesseract.image_to_string(img)
                                     os.remove("image.jpg")  # remove the image we just saved (since we don't actually need the file after hashing it)
 
@@ -125,6 +131,7 @@ for submission in subreddit:
                                     #check to see if within the meme itself if there are bad words in the list above
                                     check_ocr_bad_topics = [word for word in replaced_list if word in bad_topics]
 
+                                    # if no matches of bad topics in the ocr text, then proceed. But if so, try a new image.
                                     if not check_ocr_bad_topics:
 
                                         # create an empty list to store data
