@@ -105,7 +105,7 @@ for submission in subreddit:
 
                                     ##run OCR
                                     #point to where the tesseract files are in our directory
-                                   pytesseract.pytesseract.tesseract_cmd = r'/home/pi/.local/lib/python3.9/site-packages/tesseract'
+                                    pytesseract.pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
 
                                     #read BGR values from image
                                     img=cv2.imread('image.jpg')
