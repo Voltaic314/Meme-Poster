@@ -18,7 +18,7 @@ reddit = praw.Reddit(
     user_agent=config.config_stuff2['user_agent'],
 )
 
-SERVICE_ACCOUNT_FILE = 'keys.json' # points to the keys json file that holds the dictionary of the info we need.
+SERVICE_ACCOUNT_FILE = '/home/pi/Documents/Programming-Projects/Meme-Bot/keys.json' # points to the keys json file that holds the dictionary of the info we need.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets'] # website to send the oauth info to gain access to our data
 
 creds = None #writes this variable to no value before overwriting it with the info we need, basically cleaning and prepping it
@@ -42,7 +42,8 @@ result2 = sheet.values().get(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSH
 values2 = result2.get('values', []) #get values from spreadsheet
 
 #list of subreddits to grab memes from
-subreddit_list = ["memes", "dankmemes", "shitposting", "Unexpected", "Wholesomememes", "me_irl", "meme", "Memes_Of_The_Dank", "starterpacks", "justneckbeardthings", "animemes", "funny"]
+subreddit_list = ["memes", "dankmemes", "shitposting", "Unexpected", "Wholesomememes", "me_irl", "meme",
+                  "Memes_Of_The_Dank", "starterpacks", "animemes", "funny"]
 
 #list of bad words / topics to avoid in our posts
 bad_topics = ["faggot", "femboy", "nigger", "fat", "skinny", "horny", "masturbate", "anal", "sex",
