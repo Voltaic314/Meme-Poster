@@ -6,6 +6,7 @@ from datetime import datetime # used for date and time in the FB log posting so 
 from googleapiclient.discovery import build # for spreadsheet stuff
 from google.oauth2 import service_account # also for spreadsheet stuff
 import facebook # to add captions and comments to existing posts.
+import json
 
 page_id = "100516779334651" # ID of the FB page, can be found on FB > page > about > Page ID
 
