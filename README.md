@@ -9,7 +9,7 @@ About this code: This bot looks at a list of subreddits, picks a post which cont
 
 Please note: This script requires API access to reddit that you must provide through your own reddit app, the key is not supplied in this code. FB is also the same way, for the FB Poster side of this code you will also need a token for a FB page as well. 
 
-Also note: You will need a google sheets account and spreadsheet to draw from to make this code work as well, best to store those in the same directory as the python scripts but you can path to them elsewhere if you need. 
+Also note: You will need a google sheets account and spreadsheet to draw from to make this code work as well. 
 
 So basically TLDR the way this code works is this flow: 
 
