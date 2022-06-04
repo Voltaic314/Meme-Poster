@@ -132,7 +132,7 @@ post_id = r_text_dict.get('id')
 fb = facebook.GraphAPI(access_token = config.config_stuff['FB_Access_Token'])
 
 #edit caption of existing fb post we just made
-fb.put_object(parent_object=page_id+'_'+post_id, connection_name='', message="Original caption: " = random_title + "\n\nP.S. This post was created by a bot. To learn more about how it works, check out the Github page here: https://github.com/Voltaic314/Meme-Poster")
+fb.put_object(parent_object=page_id+'_'+post_id, connection_name='', message="Original caption: " + '"' + random_title + '"' +  "\n\nP.S. This post was created by a bot. To learn more about how it works, check out the Github page here: https://github.com/Voltaic314/Meme-Poster")
 
 #print to show successful post & edit made.
 print("Caption has been edited to post successfully.")
