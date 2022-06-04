@@ -5,6 +5,7 @@ import config # used to call sensitive info
 from datetime import datetime # used for date and time in the FB log posting so we know when things were posted to FB
 from googleapiclient.discovery import build # for spreadsheet stuff
 from google.oauth2 import service_account # also for spreadsheet stuff
+import facebook # to add captions and comments to existing posts.
 
 page_id = "100516779334651" # ID of the FB page, can be found on FB > page > about > Page ID
 
@@ -71,10 +72,12 @@ for string in values:
         r = requests.post(post_url, data=payload) #wraps up all the above info into a clean variable we can work with
         print(r.text) # print the return text from FB servers to make sure the message went through properly or if not look at errors
 
-        r_text = str(r.text) # defining this as a string variable to use later (just to be safe -- probably redundant).
+        r_text_str = str(r.text)  # defining this as a string variable to use later (just to be safe -- probably redundant).
+
+        r_text_dict = json.loads(r.text)
 
         #make sure the post we sent is not an error and actually sent through as a real post
-        check_no_error = page_id in r_text
+        check_no_error = page_id in r_text_str
 
         # True = no error
         if check_no_error is True:  # When you send a post to FB, if the post goes through it will return the page ID in the r.text, so this checks to make sure we actually made a real post instead of sending a bunch of error'd posts that didn't actually create a real post.
@@ -84,8 +87,7 @@ for string in values:
             Spreadsheet_Values_Append = []  # create a list to put the data of each variable defined above into
 
             # append that list to include the info (append probably isn't necessary since it's the only items in the list, but will fix later. TODO: fix later ;)
-            Spreadsheet_Values_Append.append(
-                [dt_string, r_text, random_title, random_id, random_permalink_string, random_url, random_size, random_hash])
+            Spreadsheet_Values_Append.append([dt_string, r_text_str, random_title, random_id, random_permalink_string, random_url, random_size, random_hash])
 
             # Now that we posted the photo, we want to log it so that we don't post it again (and good for tracking purposes too).
             request = sheet.values().append(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSHEET_ID'],
@@ -122,3 +124,15 @@ for string in values:
         if count >= 5:  # if the count goes to 5 (will because of the top condition) then...
             break  # ... break the loop. Note that the count will only go up if a successful post goes through. Meaning it can keep constantly posting errors over and over until it finally gets a successful post.
     break
+
+#define the post id for later use -- specifically this is dictionary key from the r.text return text from fb servers after we post
+post_id = r_text_dict.get('id')
+
+#define fb variable for next line with our access info
+fb = facebook.GraphAPI(access_token = config.config_stuff['FB_Access_Token'])
+
+#edit caption of existing fb post we just made
+fb.put_object(parent_object=page_id+'_'+post_id, connection_name='', message="Original caption: " = random_title + "\n\nP.S. This post was created by a bot. To learn more about how it works, check out the Github page here: https://github.com/Voltaic314/Meme-Poster")
+
+#print to show successful post & edit made.
+print("Caption has been edited to post successfully.")
