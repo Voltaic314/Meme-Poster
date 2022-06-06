@@ -62,8 +62,6 @@ flatlist_fb = [item for items in values for item in items]
 #flatten the list of lists returned from the reddit grabber spreadsheet
 flatlist_rg =[item for items in values2 for item in items]
 
-#reader = easyocr.Reader(['en'], gpu=False)
-
 #initializes loop
 count = 0
 #for loop which contains variables and parameters necessary for grabbing the type of data we want from reddit
