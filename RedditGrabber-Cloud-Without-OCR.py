@@ -1,3 +1,9 @@
+## This code is no longer used and only serves as an archive or alternative if you wish to run the code without OCR 
+## (to save on resources or if it doesn't fit your needs). Please feel free to ignore this code if you wish to inspect the actual Meme Poster FB Bot as it runs now. 
+##
+## This code also has "Cloud" in the name because it was primarily used in AWS whereas now my code runs on a raspberry pi in my house. 
+## (The internet is not as good at my house in terms of stability and reliability, but at least it's much cheaper than to spend $100 / month or more on an AWS server that can run this code for what we need. So it's the cheaper route currently).
+
 import config # used to get the secret sensitive info needed for our APIs - not uploaded to github for security purposes
 import praw # used for the reddit api - this is 100% needed for this code to work
 import requests # needed to get image file size before we download images (to make sure we don't download images too large that we can't upload elsewhere).
