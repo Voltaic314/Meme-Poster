@@ -7,7 +7,6 @@ from googleapiclient.discovery import build # python.exe -m pip install --upgrad
 from google.oauth2 import service_account # this and the above package are for the spreadsheet usage -- the pip command is a pain so I pasted it above.
 from PIL import Image # for image hashing
 import imagehash # also for image hashing
-import re # used to split strings into a list of words later down the program
 import pytesseract # used for image recognition
 import cv2 # used for parsing data and converting images before putting into tesseract OCR
 
