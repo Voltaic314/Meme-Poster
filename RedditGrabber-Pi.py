@@ -50,7 +50,7 @@ bad_topics = ["faggot", "femboy", "nigger", "fat", "skinny", "horny", "masturbat
               "Joe Biden", "Biden", "Trump", "Donald Trump", "disease", "symptom", "Parkinson", "Alzhemier", "memeory loss",
               "COVID", "covid-19", "Virus", "bacteria", "Pandemic", "quarantine", "NATO", "Ukraine", "Russia", "Putin", "fatal",
               "lethal", "no cure", "cock", "pussy", "dick", "vagina", "penis", "reddit",
-              "u/", "/r/", "feminists", "qanon", "shooting", "Uvalde",]
+              "u/", "/r/", "reddit", "feminist", "qanon", "shooting", "Uvalde",]
 
 #picks a random subreddit from the above list
 subreddit = reddit.subreddit(random.choice(subreddit_list)).hot(limit=None)
