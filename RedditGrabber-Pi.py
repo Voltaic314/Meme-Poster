@@ -2,7 +2,7 @@ import config # used to get the secret sensitive info needed for our APIs - not 
 import praw # used for the reddit api - this is 100% needed for this code to work
 import requests # needed to get image file size before we download images (to make sure we don't download images too large that we can't upload elsewhere).
 import os # needed to get the file paths
-import random #needed to pick a random subreddit to grab data from. In theory you don't have to pick a random one, you could do all at once or just one, either or.
+import random # needed to pick a random subreddit to grab data from. In theory you don't have to pick a random one, you could do all at once or just one, either or.
 from googleapiclient.discovery import build # python.exe -m pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
 from google.oauth2 import service_account # this and the above package are for the spreadsheet usage -- the pip command is a pain so I pasted it above.
 from PIL import Image # for image hashing
