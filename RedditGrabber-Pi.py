@@ -30,15 +30,15 @@ service = build('sheets', 'v4', credentials=creds) # builds a package with all t
 # Call the Sheets API
 sheet = service.spreadsheets()
 
-result = sheet.values().get(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSHEET_ID'],
+result_fb = sheet.values().get(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSHEET_ID'],
                             range="FB-Poster-Log!A:H").execute()
 
-values = result.get('values', []) #get values from spreadsheet
+values_fb = result_fb.get('values', []) #get values from spreadsheet
 
-result2 = sheet.values().get(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSHEET_ID'],
+result_rg = sheet.values().get(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSHEET_ID'],
                             range="Reddit-Grabber-Log!A:F").execute() # to specify this variable as all of the reddit grabber spreadsheet
 
-values2 = result2.get('values', []) #get values from spreadsheet
+values_rg = result_rg.get('values', []) #get values from spreadsheet
 
 #list of subreddits to grab memes from
 subreddit_list = ["memes", "dankmemes", "shitposting", "Unexpected", "Wholesomememes", "me_irl", "meme",
@@ -63,10 +63,10 @@ subreddit = reddit.subreddit(random.choice(subreddit_list)).hot(limit=None)
 ## Flattening the lists to help search for strings in those lists. All we need to do is check if they are there and get their indexes.
 
 #flatten the list of lists returned from the fb poster spreadsheet
-flatlist_fb = [item for items in values for item in items]
+flatlist_fb = [item for items in values_fb for item in items]
 
 #flatten the list of lists returned from the reddit grabber spreadsheet
-flatlist_rg =[item for items in values2 for item in items]
+flatlist_rg =[item for items in values_rg for item in items]
 
 #initializes loop
 count = 0
@@ -86,22 +86,22 @@ for submission in subreddit:
                         r = requests.get(url) # defines R variable as grabbing data from our selected url
                         length = float(r.headers.get('content-length')) / 1000 # divides file size by 1000 so we can get how many kilobytes it is
 
-                        if float(length) < 4000: # if it is less than 4 MB or 4000 KB (alternatively for cleaner numbers you can divide by 1,000,000 and do < 4 but e
-                            open("image.jpg", 'wb').write(r.content) #download the image from the "url" variable link using requests function
-                            hash = imagehash.dhash(Image.open("image.jpg")) #hash the image we just saved
+                        if float(length) < 4000: # if it is less than 4 MB or 4000 KB (alternatively for cleaner numbers you can divide by 1,000,000 and do < 4 but eh
+                            open("image.jpg", 'wb').write(r.content) # download the image from the "url" variable link using requests function
+                            hash = imagehash.dhash(Image.open("image.jpg")) # hash the image we just saved
 
                             # define all of our variables as strings to be used later
-                            submission_title_string = str(submission.title)
-                            submission_id_string = str(submission.id)
-                            submission_permalink_string = (str("https://www.reddit.com") + str(submission.permalink))
-                            submission_length_string = str(length)
-                            submission_hash_string = str(hash)
+                            sub_title_string = str(submission.title)
+                            sub_id_string = str(submission.id)
+                            sub_permalink_string = (str("https://www.reddit.com") + str(submission.permalink))
+                            sub_length_string = str(length)
+                            sub_hash_string = str(hash)
 
                             #check to make sure the hash of the image we just tested is in the spreadsheet. False means that it's not which means it's not a duplicate image (which is good).
-                            check_hash_fb = submission_hash_string in flatlist_fb
+                            check_hash_fb = sub_hash_string in flatlist_fb
 
                             #check to make sure the hash of the image we just tested is in the reddit grabber spreadsheet. (We want false values only here).
-                            check_hash_rg = submission_hash_string in flatlist_rg
+                            check_hash_rg = sub_hash_string in flatlist_rg
 
 
                             if check_hash_fb == False: #make sure the hash is not in the reddit post list already
@@ -130,8 +130,8 @@ for submission in subreddit:
 
                                     # this section cleans up the list to remove the "\n' from each string in the newly created list
                                     replaced_list = []
-                                    for s in list_text:
-                                        replaced_list.append(s.replace("\n", ""))
+                                    for strings in list_text:
+                                        replaced_list.append(strings.replace("\n", ""))
 
                                     #check to see if within the meme itself if there are bad words in the list above
                                     check_ocr_bad_topics = [word for word in replaced_list if word in bad_topics]
@@ -143,7 +143,7 @@ for submission in subreddit:
                                         Spreadsheet_Values_Append = []
 
                                         #append list with data from variables above -- I wanted to do this with the count being 4 and have a list of lists containing 4 list which each represent rows but couldn't figure out the formatting so this will do for now.
-                                        Spreadsheet_Values_Append.append([submission_title_string, submission_id_string, submission_permalink_string, url,submission_length_string, submission_hash_string])
+                                        Spreadsheet_Values_Append.append([sub_title_string, sub_id_string, sub_permalink_string, url,sub_length_string, sub_hash_string])
                                         ## TODO: Fix formatting of this nonsense so we can post more than link in a single script run
 
                                         #increases the count to break the loop
@@ -155,7 +155,7 @@ for submission in subreddit:
                                         break # break out of the original for loop above
 
 # write 2d list to the final row of the spreadsheet (this is where it adds what it just found to the spreadsheet finally).
-request = sheet.values().append(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSHEET_ID'],
+append_rg = sheet.values().append(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSHEET_ID'],
                                 range="Reddit-Grabber-Log!A:F", valueInputOption="USER_ENTERED",
                                 body={"values": Spreadsheet_Values_Append}).execute()
 
