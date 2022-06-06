@@ -71,7 +71,7 @@ for submission in subreddit:
 
         if submission.id not in flatlist_rg: #make sure we don't grab the same reddit post twice -- dont need to hash images that we've already done before
 
-            if submission.spoiler is False: # make sure the post is not flagged as a spoiler
+            if submission.spoiler == False: # make sure the post is not flagged as a spoiler
 
                 if not any(x in submission.title for x in bad_topics): # make sure no bad words are in the submission post titles.
 
