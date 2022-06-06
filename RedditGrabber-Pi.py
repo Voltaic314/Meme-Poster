@@ -44,7 +44,11 @@ values2 = result2.get('values', []) #get values from spreadsheet
 subreddit_list = ["memes", "dankmemes", "shitposting", "Unexpected", "Wholesomememes", "me_irl", "meme",
                   "Memes_Of_The_Dank", "starterpacks", "animemes", "funny"]
 
-#list of bad words / topics to avoid in our posts
+# list of bad words / topics to avoid in our posts
+# mainly what I'm trying to avoid here are images with really bad / horny type words in them. overly sexual memes, political memes,
+# memes mocking religion, any post about horrifying diseases, dark topics, bigotry memes, incel memes, and also meta level memes about reddit,
+# primarily the latter because even though it's getting memes from reddit, I want it to feel like the memes are universal and could be posted anywhere.
+
 bad_topics = ["faggot", "femboy", "nigger", "fat", "skinny", "horny", "masturbate", "anal", "sex",
               "racist", "homophobic", "rape", "rapist", "BDSM", "dom", "fucked", "hentai",
               "Joe Biden", "Biden", "Trump", "Donald Trump", "disease", "symptom", "Parkinson", "Alzhemier", "memeory loss",
@@ -56,6 +60,8 @@ bad_topics = ["faggot", "femboy", "nigger", "fat", "skinny", "horny", "masturbat
 subreddit = reddit.subreddit(random.choice(subreddit_list)).hot(limit=None)
 
 
+## Flattening the lists to help search for strings in those lists. All we need to do is check if they are there and get their indexes.
+
 #flatten the list of lists returned from the fb poster spreadsheet
 flatlist_fb = [item for items in values for item in items]
 
@@ -64,6 +70,7 @@ flatlist_rg =[item for items in values2 for item in items]
 
 #initializes loop
 count = 0
+
 #for loop which contains variables and parameters necessary for grabbing the type of data we want from reddit
 for submission in subreddit:
     url = str(submission.url) #makes sure that the url we got from the api is a string variable
@@ -76,7 +83,7 @@ for submission in subreddit:
                 if not any(x in submission.title for x in bad_topics): # make sure no bad words are in the submission post titles.
 
                     if submission.over_18 == False: # make sure the post is not flagged as NSFW -- side note: this sucks, people still post bad crap anyways and mods don't remove it. be careful which subreddits you are scanning even with this on.
-                        r = requests.get(url) #defines R variable as grabbing data from our selected url
+                        r = requests.get(url) # defines R variable as grabbing data from our selected url
                         length = float(r.headers.get('content-length')) / 1000 # divides file size by 1000 so we can get how many kilobytes it is
 
                         if float(length) < 4000: # if it is less than 4 MB or 4000 KB (alternatively for cleaner numbers you can divide by 1,000,000 and do < 4 but e
@@ -147,7 +154,7 @@ for submission in subreddit:
                                                 break  # ... break the loop. Note that the count will only go up if a successful post goes through. Meaning it can keep constantly posting errors over and over until it finally gets a successful post.
                                         break # break out of the original for loop above
 
-#write 2d list to the final row of the spreadsheet (this is where it adds what it just found to the spreadsheet finally
+# write 2d list to the final row of the spreadsheet (this is where it adds what it just found to the spreadsheet finally).
 request = sheet.values().append(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSHEET_ID'],
                                 range="Reddit-Grabber-Log!A:F", valueInputOption="USER_ENTERED",
                                 body={"values": Spreadsheet_Values_Append}).execute()
