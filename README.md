@@ -5,7 +5,7 @@ Link to FB page:
 https://www.facebook.com/DankMemeBot9000/
 ###############################
 
-About this code: This bot looks at a list of subreddits, picks a post which contain images, also that aren't flagged as NSFW or spoilers, then saves those to a spreadsheet, then the FB poster script posts from that text file given the image urls. 
+About this code: This bot looks at a list of subreddits, picks a post which contain images, also that aren't flagged as NSFW or spoilers, then saves those to a spreadsheet, then the FB poster script posts from that spreadsheet with the given the image urls. 
 
 Please note: This script requires API access to reddit that you must provide through your own reddit app, the key is not supplied in this code. FB is also the same way, for the FB Poster side of this code you will also need a token for a FB page as well. 
 
