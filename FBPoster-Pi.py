@@ -6,38 +6,54 @@ from datetime import datetime  # used for date and time in the FB log posting so
 from googleapiclient.discovery import build  # for spreadsheet stuff
 from google.oauth2 import service_account  # also for spreadsheet stuff
 import facebook  # to add captions and comments to existing posts.
-import json  # to decipher the dictionary we get back in return from FB servers. (Mainly this is used to edit captions to the posts).
+import json # to decipher the dictionary we get back in return from FB servers. (Mainly this is used to edit captions to the posts).
 
-page_id = "100516779334651"  # ID of the FB page, can be found on FB > page > about > Page ID
+# ID of the FB page, can be found on FB > page > about > Page ID
+page_id = "100516779334651"
 
-now = datetime.now()  # grabs the date and time
-dt_string = now.strftime("%m/%d/%Y %H:%M:%S")  # formats the date and time to this format
+# grabs the date and time
+now = datetime.now()
 
-SERVICE_ACCOUNT_FILE = '/home/pi/Documents/Programming-Projects/Meme-Bot/keys.json'  # points to the keys json file that holds the dictionary of the info we need.
-SCOPES = ['https://www.googleapis.com/auth/spreadsheets']  # website to send the oauth info to gain access to our data
+# formats the date and time to this format
+dt_string = now.strftime("%m/%d/%Y %H:%M:%S")
 
-creds = None  # writes this variable to no value before overwriting it with the info we need, basically cleaning and prepping it
-creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)  # writes the creds value with the value from the keys json file above
+# points to the keys json file that holds the dictionary of the info we need.
+SERVICE_ACCOUNT_FILE = '/home/pi/Documents/Programming-Projects/Meme-Bot/keys.json'
 
-service = build('sheets', 'v4', credentials=creds)  # builds a package with all the above info and version we need and the right service we need
+# website to send the oauth info to gain access to our data
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+
+# writes this variable to no value before overwriting it with the info we need, basically cleaning and prepping it
+creds = None
+
+# writes the creds value with the value from the keys json file above
+creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+
+# builds a package with all the above info and version we need and the right service we need
+service = build('sheets', 'v4', credentials=creds)
 
 # Call the Sheets API
 sheet = service.spreadsheets()
 
+# to specify this variable as all of the FB log sheet values
 result_fb = sheet.values().get(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSHEET_ID'],
-                               range="FB-Poster-Log!A:H").execute()  # to specify this variable as all of the FB log sheet values
+                               range="FB-Poster-Log!A:H").execute()
 
-values_fb = result_fb.get('values', [])  # get values from spreadsheet
+# get values from spreadsheet
+values_fb = result_fb.get('values', [])
 
+# to specify this variable as all of the reddit grabber spreadsheet
 result_rg = sheet.values().get(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSHEET_ID'],
-                               range="Reddit-Grabber-Log!A:F").execute()  # to specify this variable as all of the reddit grabber spreadsheet
+                               range="Reddit-Grabber-Log!A:F").execute()
 
-values_rg = result_rg.get('values', [])  # get values from spreadsheet
+# get values from spreadsheet
+values_rg = result_rg.get('values', [])
 
 count = 0  # establishes count
 
 # setup primary for loop
 for string in values_fb:
+
     # create an empty list to fill with data
     chosen_post = []
 
@@ -45,27 +61,41 @@ for string in values_fb:
     chosen_post = random.choice(values_rg)
 
     # basically labeling each item in the index if we ever need to use them
-    random_title = chosen_post[0]  # grab element one from random list item, this is the title of the randomly grabbed post
-    random_id = chosen_post[1]  # grab element two from random list item, this is the id of the randomly grabbed post
-    random_permalink = chosen_post[2]  # grab element three from random list item, this is permalink of the randomly grabbed post
-    random_url = chosen_post[3]  # grab element four from random list item, this is the url to the image itself, of the randomly grabbed post
-    random_size = chosen_post[4]  # grab element five from random list item, this is file size of the randomly grabbed post
-    random_hash = chosen_post[5]  # grab element six from random list item, this is the image hash of the reddit image
+    # grab element one from random list item, this is the title of the randomly grabbed post
+    random_title = chosen_post[0]
 
-    random_hash_string = str(random_hash)  # converts hash to string value just to be safe for the next step
+    # grab element two from random list item, this is the id of the randomly grabbed post
+    random_id = chosen_post[1]
 
-    # create a flatten list from the list of lists, this way we can do searches through it lke hash check for example
+    # grab element three from random list item, this is permalink of the randomly grabbed post
+    random_permalink = chosen_post[2]
+
+    # grab element four from random list item, this is the url to the image itself, of the randomly grabbed post
+    random_url = chosen_post[3]
+
+    # grab element five from random list item, this is file size of the randomly grabbed post
+    random_size = chosen_post[4]
+
+    # grab element six from random list item, this is the image hash of the reddit image
+    random_hash = chosen_post[5]
+
+    # converts hash to string value just to be safe for the next step
+    random_hash_string = str(random_hash)
+
+    # create a flatten list from the list of lists, this way we can do searches thorugh it lke hash check for example
     flatlist_fb_sheet = [item for items in values_fb for item in items]
 
     # look for hash in the FB post log
     check_hash = random_hash_string in flatlist_fb_sheet
 
-    if check_hash is False:
+    # make sure that the hash did not come up in the search results - if none then it's not a duplicate image
+    if check_hash == False:
 
-        # make sure that the hash did not come up in the search results - if none then it's not a duplicate image
-        msg = str(random_url)  # the message we are sending to the fb server and make sure it's a string
+        # the message we are sending to the fb server and make sure it's a string
+        msg = str(random_url)
 
-        post_url = 'https://graph.facebook.com/{}/photos'.format(page_id)  # url that we will send our HTTP request to - to post it to FB
+        # url that we will send our HTTP request to - to post it to FB
+        post_url = 'https://graph.facebook.com/{}/photos'.format(page_id)
 
         payload = {
             "url": msg,  # injecting our str(url) into the "url" section of the link itself
@@ -73,11 +103,14 @@ for string in values_fb:
             # giving our api token to our page referenced in the secret config file
         }
 
-        r = requests.post(post_url, data=payload)  # wraps up all the above info into a clean variable we can work with
+        # wraps up all the above info into a clean variable we can work with
+        r = requests.post(post_url, data=payload)
 
-        print(r.text)  # print the return text from FB servers to make sure the message went through properly or if not look at errors
+        # print the return text from FB servers to make sure the message went through properly or if not look at errors
+        print(r.text)
 
-        r_text_str = str(r.text)  # defining this as a string variable to use later (just to be safe -- probably redundant).
+        # defining this as a string variable to use later (just to be safe -- probably redundant).
+        r_text_str = str(r.text)
 
         r_text_dict = json.loads(r.text)
 
@@ -85,23 +118,29 @@ for string in values_fb:
         check_no_error = page_id in r_text_str
 
         # If "check_no_error" is True then that means there were no error return code from FB servers, meaning the post went through
-        if check_no_error == True:  # When you send a post to FB, if the post goes through it will return the page ID in the r.text, so this checks to make sure we actually made a real post instead of sending a bunch of error'd posts that didn't actually create a real post.
-            random_permalink_string = str(random_permalink)  # without concatenating, random_permalink only gives back /r/.... without the url part of it
+        # When you send a post to FB, if the post goes through it will return the page ID in the r.text, so this checks to make sure we actually made a real post instead of sending a bunch of error'd posts that didn't actually create a real post.
+        if check_no_error == True:
+
+            # without concatenating, random_permalink only gives back /r/.... without the url part of it
+            random_permalink_string = str(random_permalink)
 
             # create an empty list to store our list of values to write to teh spreadsheet (spreadsheet requires a 2d list aka list of lists
-            Spreadsheet_Values_Append = []  # create a list to put the data of each variable defined above into
+            spreadsheet_values_append = []
 
             # append that list to include the info (append probably isn't necessary since it's the only items in the list, but will fix later. TODO: fix later ;)
-            Spreadsheet_Values_Append.append(
+            spreadsheet_values_append.append(
                 [dt_string, r_text_str, random_title, random_id, random_permalink_string, random_url, random_size,
                  random_hash])
 
             # Now that we posted the photo, we want to log it so that we don't post it again (and good for tracking purposes too).
+            # this appends the spreadsheet to fit the list (row) of data onto the last row of the values.
             request = sheet.values().append(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSHEET_ID'],
                                             range="FB-Poster-Log!A:H", valueInputOption="USER_ENTERED",
-                                            body={"values": Spreadsheet_Values_Append}).execute()  # this appends the spreadsheet to fit the list (row) of data onto the last row of the values.
+                                            body={"values": spreadsheet_values_append}).execute()
 
-            print("Logged to FB Poster Spreadsheet")  # really just using this as a confirmation to make sure the code got this far.
+
+            # really just using this as a confirmation to make sure the code got this far.
+            print("Logged to FB Poster Spreadsheet")
 
             # create an empty list
             random_generated = []
@@ -110,7 +149,7 @@ for string in values_fb:
             random_generated = [random_title, random_id, random_permalink_string, random_url, random_size, random_hash]
 
             # take values 2 and remove the randomly generated info from the 2d list in python
-            values2.remove(random_generated)
+            values_rg.remove(random_generated)
 
             # clear all the values in the reddit spreadsheet
             request_clear = sheet.values().clear(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSHEET_ID'],
@@ -119,7 +158,7 @@ for string in values_fb:
             # replace those empty cells with the new list that doesn't contain the one that FB Poster random choice grabbed
             request_rewrite = sheet.values().update(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSHEET_ID'],
                                                     range="Reddit-Grabber-Log!A:F", valueInputOption="RAW",
-                                                    body={"values": values2}).execute()
+                                                    body={"values": values_rg}).execute()
 
             count += 5  # increases the count so that this breaks the loop later
 
@@ -129,9 +168,13 @@ for string in values_fb:
     else:
         continue  # try to find a different hash string that isn't in the loop.
 
-    for x in values_fb:  # starting for loop to establish checking the count
-        if count >= 5:  # if the count goes to 5 (will because of the top condition) then...
-            break  # ... break the loop. Note that the count will only go up if a successful post goes through. Meaning it can keep constantly posting errors over and over until it finally gets a successful post.
+    # starting for loop to establish checking the count
+    for x in values_fb:
+
+        # if the count goes to 5 (will because of the top condition) then...
+        if count >= 5:
+            # break the loop. Note that the count will only go up if a successful post goes through. Meaning it can keep constantly posting errors over and over until it finally gets a successful post.
+            break
     break
 
 # define the post id for later use -- specifically this is dictionary key from the r.text return text from fb servers after we post
