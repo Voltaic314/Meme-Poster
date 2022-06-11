@@ -18,27 +18,39 @@ reddit = praw.Reddit(
     user_agent=config.config_stuff2['user_agent'],
 )
 
-SERVICE_ACCOUNT_FILE = '/home/pi/Documents/Programming-Projects/Meme-Bot/keys.json' # points to the keys json file that holds the dictionary of the info we need.
-SCOPES = ['https://www.googleapis.com/auth/spreadsheets'] # website to send the oauth info to gain access to our data
+# points to the keys json file that holds the dictionary of the info we need.
+SERVICE_ACCOUNT_FILE = '/home/pi/Documents/Programming-Projects/Meme-Bot/keys.json'
 
-creds = None #writes this variable to no value before overwriting it with the info we need, basically cleaning and prepping it
-creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES) #writes the creds value with the value from the keys json file above
+# website to send the oauth info to gain access to our data
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
-service = build('sheets', 'v4', credentials=creds) # builds a package with all the above info and version we need and the right service we need
+# Writes this variable to no value before overwriting it with the info we need, basically cleaning and prepping it
+creds = None
+
+# Writes the creds value with the value from the keys json file above
+creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+
+
+# builds a package with all the above info and version we need and the right service we need
+service = build('sheets', 'v4', credentials=creds)
 
 
 # Call the Sheets API
 sheet = service.spreadsheets()
 
-result = sheet.values().get(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSHEET_ID'],
+# to specify this variable as all of the FB Poster spreadsheet
+result_fb = sheet.values().get(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSHEET_ID'],
                             range="FB-Poster-Log!A:H").execute()
 
-values = result.get('values', []) #get values from spreadsheet
+# Get values from spreadsheet
+values_fb = result_fb.get('values', [])
 
-result2 = sheet.values().get(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSHEET_ID'],
-                            range="Reddit-Grabber-Log!A:F").execute() # to specify this variable as all of the reddit grabber spreadsheet
+# to specify this variable as all of the reddit grabber spreadsheet
+result_rg = sheet.values().get(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSHEET_ID'],
+                            range="Reddit-Grabber-Log!A:F").execute()
 
-values2 = result2.get('values', []) #get values from spreadsheet
+# Get values from spreadsheet
+values_rg = result_rg.get('values', [])
 
 #list of subreddits to grab memes from
 subreddit_list = ["memes", "dankmemes", "shitposting", "Unexpected", "Wholesomememes", "me_irl", "meme",
@@ -57,34 +69,49 @@ subreddit = reddit.subreddit(random.choice(subreddit_list)).top(time_filter="day
 
 
 #flatten the list of lists returned from the fb poster spreadsheet
-flatlist_fb = [item for items in values for item in items]
+flatlist_fb = [item for items in values_fb for item in items]
 
 #flatten the list of lists returned from the reddit grabber spreadsheet
-flatlist_rg =[item for items in values2 for item in items]
+flatlist_rg =[item for items in values_rg for item in items]
 
-#reader = easyocr.Reader(['en'], gpu=False)
-
-#initializes loop
+# Initializes loop
 count = 0
 
-#for loop which contains variables and parameters necessary for grabbing the type of data we want from reddit
+# For loop which contains variables and parameters necessary for grabbing the type of data we want from reddit
 for submission in subreddit:
-    url = str(submission.url) #makes sure that the url we got from the api is a string variable
-    if url.endswith("jpg") or url.endswith("jpeg") or url.endswith("png"): #make sure the post is an image
 
-        if submission.id not in flatlist_rg: #make sure we don't grab the same reddit post twice -- dont need to hash images that we've already done before
+    # Makes sure that the url we got from the api is a string variable
+    url = str(submission.url)
 
-            if submission.spoiler is False: # make sure the post is not flagged as a spoiler
+    # Make sure the post is an image
+    if url.endswith("jpg") or url.endswith("jpeg") or url.endswith("png"):
 
-                if not any(x in submission.title for x in bad_topics): # make sure no bad words are in the submission post titles.
+        # make sure we don't grab the same reddit post twice -- dont need to hash images that we've already done before
+        if submission.id not in flatlist_rg:
 
-                    if submission.over_18 == False: # make sure the post is not flagged as NSFW -- side note: this sucks, people still post bad crap anyways and mods don't remove it. be careful which subreddits you are scanning even with this on.
-                        r = requests.get(url) #defines R variable as grabbing data from our selected url
-                        length = float(r.headers.get('content-length')) / 1000 # divides file size by 1000 so we can get how many kilobytes it is
+            # make sure the post is not flagged as a spoiler
+            if submission.spoiler is False:
 
-                        if float(length) < 4000: # if it is less than 4 MB or 4000 KB (alternatively for cleaner numbers you can divide by 1,000,000 and do < 4 but e
-                            open("image.jpg", 'wb').write(r.content) #download the image from the "url" variable link using requests function
-                            hash = imagehash.dhash(Image.open("image.jpg")) #hash the image we just saved
+                # make sure no bad words are in the submission post titles.
+                if not any(x in submission.title for x in bad_topics):
+
+                    # make sure the post is not flagged as NSFW -- side note: this sucks, people still post bad crap anyways and mods don't remove it. be careful which subreddits you are scanning even with this on.
+                    if submission.over_18 == False:
+
+                        # defines R variable as grabbing data from our selected url
+                        r = requests.get(url)
+
+                        # divides file size by 1000 so we can get how many kilobytes it is
+                        length = float(r.headers.get('content-length')) / 1000
+
+                        # if it is less than 4 MB or 4000 KB (alternatively for cleaner numbers you can divide by 1,000,000 and do < 4 but e
+                        if float(length) < 4000:
+
+                            # download the image from the "url" variable link using requests function
+                            open("image.jpg", 'wb').write(r.content)
+
+                            # hash the image we just saved
+                            hash = imagehash.dhash(Image.open("image.jpg"))
 
                             # define all of our variables as strings to be used later
                             submission_title_string = str(submission.title)
@@ -99,14 +126,15 @@ for submission in subreddit:
                             #check to make sure the hash of the image we just tested is in the reddit grabber spreadsheet. (We want false values only here).
                             check_hash_rg = submission_hash_string in flatlist_rg
 
+                            # make sure the hash is not in the FBpost list already
+                            if check_hash_fb == False:
 
-                            if check_hash_fb == False: #make sure the hash is not in the reddit post list already
-
+                                # make sure the hash is not in the reddit post list already
                                 if check_hash_rg == False:
 
                                     ##run OCR
                                     #point to where the tesseract files are in our directory
-                                    pytesseract.pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
+                                    pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
 
                                     #read BGR values from image
                                     img=cv2.imread('image.jpg')
@@ -116,7 +144,9 @@ for submission in subreddit:
 
                                     #give us the resulting text (strings) from the image
                                     ocr_result = pytesseract.image_to_string(img)
-                                    os.remove("image.jpg")  # remove the image we just saved (since we don't actually need the file after hashing it)
+
+                                    # remove the image we just saved (since we don't actually need the file after hashing it)
+                                    os.remove("image.jpg")  
 
                                     #this function converts the text from OCR into a list of individual strings, where each string is an element in a list
                                     def Convert(string):
@@ -155,13 +185,20 @@ for submission in subreddit:
 
                                         #if the count reaches 4 (meaning it has collected 4 posts) from the randomly chosen subreddit, then we're good, if not keep going until we get 4.
                                         if count == 4:
-                                            break # break means to break out of the loop, meaning we're good
+
+                                            # break means to break out of the loop, meaning we're good
+                                            break 
+                                        
                                         else:
-                                            continue # continue in this instance means to start the loop over (meaning go get another post that meet the criteria
+
+                                            # continue in this instance means to start the loop over (meaning go get another post that meet the criteria
+                                            continue 
 
                                     # if this part isn't included, it will run through 4 iterations, but may not end up grabbing any posts out of the 4 attempts that meet the criteria.
                                     else:
-                                        continue # continue in this case meaning, if the post we grabbed doesn't meet the criteria, keep trying until we get one, then start increasing the count.
+
+                                        # continue in this case meaning, if the post we grabbed doesn't meet the criteria, keep trying until we get one, then start increasing the count.
+                                        continue 
 
 
 # just for my own sanity, to make sure we completed the whole loop and script. THe proverbial "The end." lol
