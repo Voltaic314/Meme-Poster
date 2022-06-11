@@ -22,8 +22,7 @@ SERVICE_ACCOUNT_FILE = '/home/pi/Documents/Programming-Projects/Meme-Bot/keys.js
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets'] # website to send the oauth info to gain access to our data
 
 creds = None #writes this variable to no value before overwriting it with the info we need, basically cleaning and prepping it
-creds = service_account.Credentials.from_service_account_file(
-        SERVICE_ACCOUNT_FILE, scopes=SCOPES) #writes the creds value with the value from the keys json file above
+creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES) #writes the creds value with the value from the keys json file above
 
 service = build('sheets', 'v4', credentials=creds) # builds a package with all the above info and version we need and the right service we need
 
