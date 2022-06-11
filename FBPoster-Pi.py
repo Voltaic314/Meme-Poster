@@ -6,8 +6,7 @@ from datetime import datetime  # used for date and time in the FB log posting so
 from googleapiclient.discovery import build  # for spreadsheet stuff
 from google.oauth2 import service_account  # also for spreadsheet stuff
 import facebook  # to add captions and comments to existing posts.
-import \
-    json  # to decipher the dictionary we get back in return from FB servers. (Mainly this is used to edit captions to the posts).
+import json  # to decipher the dictionary we get back in return from FB servers. (Mainly this is used to edit captions to the posts).
 
 page_id = "100516779334651"  # ID of the FB page, can be found on FB > page > about > Page ID
 
@@ -18,11 +17,9 @@ SERVICE_ACCOUNT_FILE = '/home/pi/Documents/Programming-Projects/Meme-Bot/keys.js
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']  # website to send the oauth info to gain access to our data
 
 creds = None  # writes this variable to no value before overwriting it with the info we need, basically cleaning and prepping it
-creds = service_account.Credentials.from_service_account_file(
-    SERVICE_ACCOUNT_FILE, scopes=SCOPES)  # writes the creds value with the value from the keys json file above
+creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)  # writes the creds value with the value from the keys json file above
 
-service = build('sheets', 'v4',
-                credentials=creds)  # builds a package with all the above info and version we need and the right service we need
+service = build('sheets', 'v4', credentials=creds)  # builds a package with all the above info and version we need and the right service we need
 
 # Call the Sheets API
 sheet = service.spreadsheets()
@@ -48,20 +45,16 @@ for string in values_fb:
     chosen_post = random.choice(values_rg)
 
     # basically labeling each item in the index if we ever need to use them
-    random_title = chosen_post[
-        0]  # grab element one from random list item, this is the title of the randomly grabbed post
+    random_title = chosen_post[0]  # grab element one from random list item, this is the title of the randomly grabbed post
     random_id = chosen_post[1]  # grab element two from random list item, this is the id of the randomly grabbed post
-    random_permalink = chosen_post[
-        2]  # grab element three from random list item, this is permalink of the randomly grabbed post
-    random_url = chosen_post[
-        3]  # grab element four from random list item, this is the url to the image itself, of the randomly grabbed post
-    random_size = chosen_post[
-        4]  # grab element five from random list item, this is file size of the randomly grabbed post
+    random_permalink = chosen_post[2]  # grab element three from random list item, this is permalink of the randomly grabbed post
+    random_url = chosen_post[3]  # grab element four from random list item, this is the url to the image itself, of the randomly grabbed post
+    random_size = chosen_post[4]  # grab element five from random list item, this is file size of the randomly grabbed post
     random_hash = chosen_post[5]  # grab element six from random list item, this is the image hash of the reddit image
 
     random_hash_string = str(random_hash)  # converts hash to string value just to be safe for the next step
 
-    # create a flatten list from the list of lists, this way we can do searches thorugh it lke hash check for example
+    # create a flatten list from the list of lists, this way we can do searches through it lke hash check for example
     flatlist_fb_sheet = [item for items in values_fb for item in items]
 
     # look for hash in the FB post log
@@ -72,8 +65,7 @@ for string in values_fb:
         # make sure that the hash did not come up in the search results - if none then it's not a duplicate image
         msg = str(random_url)  # the message we are sending to the fb server and make sure it's a string
 
-        post_url = 'https://graph.facebook.com/{}/photos'.format(
-            page_id)  # url that we will send our HTTP request to - to post it to FB
+        post_url = 'https://graph.facebook.com/{}/photos'.format(page_id)  # url that we will send our HTTP request to - to post it to FB
 
         payload = {
             "url": msg,  # injecting our str(url) into the "url" section of the link itself
@@ -83,11 +75,9 @@ for string in values_fb:
 
         r = requests.post(post_url, data=payload)  # wraps up all the above info into a clean variable we can work with
 
-        print(
-            r.text)  # print the return text from FB servers to make sure the message went through properly or if not look at errors
+        print(r.text)  # print the return text from FB servers to make sure the message went through properly or if not look at errors
 
-        r_text_str = str(
-            r.text)  # defining this as a string variable to use later (just to be safe -- probably redundant).
+        r_text_str = str(r.text)  # defining this as a string variable to use later (just to be safe -- probably redundant).
 
         r_text_dict = json.loads(r.text)
 
@@ -96,8 +86,7 @@ for string in values_fb:
 
         # If "check_no_error" is True then that means there were no error return code from FB servers, meaning the post went through
         if check_no_error == True:  # When you send a post to FB, if the post goes through it will return the page ID in the r.text, so this checks to make sure we actually made a real post instead of sending a bunch of error'd posts that didn't actually create a real post.
-            random_permalink_string = str(
-                random_permalink)  # without concatenating, random_permalink only gives back /r/.... without the url part of it
+            random_permalink_string = str(random_permalink)  # without concatenating, random_permalink only gives back /r/.... without the url part of it
 
             # create an empty list to store our list of values to write to teh spreadsheet (spreadsheet requires a 2d list aka list of lists
             Spreadsheet_Values_Append = []  # create a list to put the data of each variable defined above into
@@ -110,11 +99,9 @@ for string in values_fb:
             # Now that we posted the photo, we want to log it so that we don't post it again (and good for tracking purposes too).
             request = sheet.values().append(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSHEET_ID'],
                                             range="FB-Poster-Log!A:H", valueInputOption="USER_ENTERED",
-                                            body={
-                                                "values": Spreadsheet_Values_Append}).execute()  # this appends the spreadsheet to fit the list (row) of data onto the last row of the values.
+                                            body={"values": Spreadsheet_Values_Append}).execute()  # this appends the spreadsheet to fit the list (row) of data onto the last row of the values.
 
-            print(
-                "Logged to FB Poster Spreadsheet")  # really just using this as a confirmation to make sure the code got this far.
+            print("Logged to FB Poster Spreadsheet")  # really just using this as a confirmation to make sure the code got this far.
 
             # create an empty list
             random_generated = []
