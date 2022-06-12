@@ -74,7 +74,7 @@ flatlist_fb = [item for items in values_fb for item in items]
 #flatten the list of lists returned from the reddit grabber spreadsheet
 flatlist_rg =[item for items in values_rg for item in items]
 
-# Initializes loop
+# Initializes count
 count = 0
 
 # For loop which contains variables and parameters necessary for grabbing the type of data we want from reddit
