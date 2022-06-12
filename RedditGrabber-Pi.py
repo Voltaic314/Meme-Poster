@@ -8,7 +8,7 @@ from google.oauth2 import service_account # this and the above package are for t
 from PIL import Image # for image hashing
 import imagehash # also for image hashing
 import re # used to split strings into a list of words later down the program
-import pytesseract # used for image recognition
+import pytesseract # used for optical recognition
 import cv2 # used for parsing data and converting images before putting into tesseract OCR
 
 #establishing our creds to gain access to the API before we start doing any calls.
