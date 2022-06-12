@@ -95,7 +95,7 @@ for submission in subreddit:
         # divides file size by 1000 so we can get how many kilobytes it is
         length = float(r.headers.get('content-length')) / 1000
 
-        # if it is less than 4 MB or 4000 KB (alternatively for cleaner numbers you can divide by 1,000,000 and do < 4 but e
+        # if it is less than 4 MB or 4000 KB (alternatively for cleaner numbers you can divide by 1,000,000 and do < 4 but eh)
         if float(length) < 4000:
 
             # download the image from the "url" variable link using requests function
