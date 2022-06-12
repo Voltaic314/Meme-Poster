@@ -156,7 +156,7 @@ for submission in subreddit:
                     # create an empty list to store data
                     Spreadsheet_Values_Append = []
 
-                    #append list with data from variables above -- I wanted to do this with the count being 4 and have a list of lists containing 4 list which each represent rows but couldn't figure out the formatting so this will do for now.
+                    #append list with data from variables above
                     Spreadsheet_Values_Append.append([submission_title_string, submission_id_string, submission_permalink_string, 
                                                       url, submission_length_string, submission_hash_string])
 
