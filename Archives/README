@@ -1,0 +1,24 @@
+The files in this folder are the original versions (and their commit histories) of the original 2 scripts I made for this project.
+
+I didn't actually change any parameters of how the codes work in the new editions, mainly just changed some variables and added a lot more functions and objects to work with. 
+
+So primarily this code just serves as a proverbial "what-not-to-do" type of code that you should not follow. It will work but it is bad dumb code that should not be taken seriously. 
+
+I don't mean to be so hard on myself. After all, I wrote these 2 scripts with some extreme determination with never taking a formal class in Python. 
+
+I scraped these codes together with no formal training in python, only been coding for about 6 months up until I made them. So I will always be proud of them, 
+no matter how bad they were. I've come a long way from print hello world to here. I'm very happy with my progress I've made in Python up until this point and can't wait
+to see where my journey takes me next. 
+
+I don't have any more major plans for my current scripts, as I've primarily implemented all the things I want to implement. I think now I will work on just researching
+more refactoring technniques. Might even take a break to learn JavaScript at some point since my part time job is for a web software company. That would be kind of cool. 
+
+Anyways, just want to say thanks to everybody who supported me along the way. Thanks to all who helped me succeed. 
+
+Also, want to give a HUGE shoutout to Reddit User F3Zinker, who refactored a lot of my RG script. Without his help, I would have never had a reference point to pivot off
+of. With his help in refactoring my code I was able to see what he was doing and why he was doing it. I very quickly picked up on when and were to make functions and why 
+they are used in Python. 
+
+It's like private tutoring in a way. So, friend, wherever you are out there in the world, you have all the thanks I could ever give.
+
+Thank you. 
