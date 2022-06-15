@@ -39,10 +39,10 @@ def rewrite_spreadsheet(values):
                                             body={"values": values}).execute()
     
 
-def log_to_sheet(two_d_list):
+def sheet_append(one_d_list):
     log_to_fb_sheet = sheet.values().append(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSHEET_ID'],
                                             range="FB-Poster-Log!A:H", valueInputOption="USER_ENTERED",
-                                            body={"values": two_d_list}).execute()
+                                            body={"values": one_d_list}).execute()
 
 def flatten(two_d_list):
     return [item for items in two_d_list for item in items]
@@ -111,12 +111,10 @@ if __name__ == '__main__':
 
             if fb_page_id in return_text_str:
 
-                spreadsheet_values_append = []
-                spreadsheet_values_append.append([dt_string, return_text_str, chosen_title, chosen_id, chosen_permalink, chosen_url, chosen_size, chosen_hash])
-
+                spreadsheet_values_to_log = [dt_string, return_text_str, chosen_title, chosen_id, chosen_permalink, chosen_url, chosen_size, chosen_hash]
+                sheet_append(spreadsheet_values_to_log)
                 print("Logged to FB Poster Spreadsheet")
 
-                chosen_generated = []
                 chosen_generated = [chosen_title, chosen_id, chosen_permalink, chosen_url, chosen_size, chosen_hash]
                 values_rg.remove(chosen_generated)
                 clear_spreadsheet()
