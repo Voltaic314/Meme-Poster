@@ -109,7 +109,7 @@ if __name__ == '__main__':
             post_id = return_text_dict.get('id')
 
 
-            if fb_page_id not in return_text_str:
+            if fb_page_id in return_text_str:
 
                 spreadsheet_values_append = []
                 spreadsheet_values_append.append([dt_string, return_text_str, chosen_title, chosen_id, chosen_permalink, chosen_url, chosen_size, chosen_hash])
