@@ -117,7 +117,7 @@ if __name__ == '__main__':
                 print("Logged to FB Poster Spreadsheet")
 
                 chosen_generated = []
-                chosen_generated = [chosen_title, chosen_id, chosen_permalink_string, chosen_url, chosen_size, chosen_hash]
+                chosen_generated = [chosen_title, chosen_id, chosen_permalink, chosen_url, chosen_size, chosen_hash]
                 values_rg.remove(chosen_generated)
                 clear_spreadsheet()
                 rewrite_spreadsheet(values_rg)
