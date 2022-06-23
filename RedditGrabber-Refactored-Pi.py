@@ -18,12 +18,6 @@ reddit = praw.Reddit(
     user_agent=config.config_stuff2['user_agent'],
 )
 
-# list of subreddits to grab memes from
-subreddit_list = ["memes", "dankmemes", "shitposting", "Unexpected", "Wholesomememes", "me_irl", "meme",
-                  "Memes_Of_The_Dank", "starterpacks", "animemes", "funny"]
-
-subreddit = reddit.subreddit(random.choice(subreddit_list)).top(time_filter="day", limit=None)
-
 
 def is_picture(url):
     """
@@ -144,6 +138,10 @@ if __name__ == "__main__":
     result_rg = SHEET.values().get(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSHEET_ID'],
                                    range="Reddit-Grabber-Log!A:F").execute()
     values_rg = result_rg.get('values', [])
+    result_rs = SHEET.values().get(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSHEET_ID'],
+                                   range="Reddit-Sources!A:A").execute()
+    values_rs = result_rs.get('values', [])
+
     result_bw = SHEET.values().get(spreadsheetId=config.config_stuff4['SAMPLE_SPREADSHEET_ID'],
                                    range="Bad_Topics - NSFW!A:A").execute()
     values_bw = result_bw.get('values', [])
@@ -152,6 +150,9 @@ if __name__ == "__main__":
     flatlist_fb = flatten(values_fb)
     flatlist_rg = flatten(values_rg)
     flatlist_bw = flatten(values_bw)
+    flatlist_rs = flatten(values_rs)
+
+    subreddit = reddit.subreddit(random.choice(flatlist_rs)).top(time_filter="day", limit=None)
 
     count = 0
 
